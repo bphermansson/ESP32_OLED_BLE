@@ -21,14 +21,23 @@
    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
    SOFTWARE.
 */
-#include <OLED_I2C.h>
+#include <Wire.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
 #include <ChronosESP32.h>
 #include "graphics.h"
 
 #define BUILTINLED 2
 #define BUTTON 0 // ESP32 BOOT button
 
-OLED  myOLED(25, 26); //(SDA, SCL)
+#define SCREEN_WIDTH 128
+#define SCREEN_HEIGHT 64
+
+// Define your custom I2C pins here
+#define CUSTOM_SDA 8
+#define CUSTOM_SCL 9
+
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 ChronosESP32 watch("OLED Watch");
 
 extern uint8_t SmallFont[], MediumNumbers[];
@@ -66,6 +75,7 @@ void notificationCallback(Notification notification)
   Serial.print("\tIcon: ");
   Serial.println(notification.icon);
   Serial.println(notification.message);
+   Serial.println(notification.title);
 
   timer = millis();
   msg = notification.message.substring(0, 126);
@@ -99,103 +109,6 @@ void ringerCallback(String caller, bool state)
     timer = millis() - timeout;
     scrOff = true;
   }
-}
-
-
-void setup() {
-  Serial.begin(115200);
-  Serial.println("Starting watch");
-  
-  pinMode(BUILTINLED, OUTPUT);
-  pinMode(BUTTON, INPUT_PULLUP);
-
-  if (!myOLED.begin(SSD1306_128X32)) {
-    Serial.println("Failed to allocate enough RAM");
-    while (1);  // In case the library failed to allocate enough RAM for the display buffer...
-  }
-  myOLED.setFont(SmallFont);
-
-
-  watch.setConfigurationCallback(configCallback);
-  watch.setNotificationCallback(notificationCallback);
-  watch.setRingerCallback(ringerCallback);
-  
-  watch.begin();
-
-  watch.set24Hour(true);
-  watch.setBattery(80);
-
-  timer = millis() - timeout;
-
-}
-
-void loop() {
-  watch.loop();
-
-  button(digitalRead(BUTTON) == LOW);   // input pin
-  myOLED.clrScr();
-
-  myOLED.flipMode(flip ^ rotate); // custom function for HUD display (mirrored)
-  myOLED.rotateDisplay(rotate);
-  myOLED.sleepMode(scrOff & screenOff);
-
-  digitalWrite(BUILTINLED, watch.isConnected());
-
-  long cur = millis();
-  if (cur < timer + timeout) {
-    scrTimer = cur;
-    long rem = (timer + timeout - cur);
-    if (lines > 3 && rem < timeout - (timeout / 3) && rem > (timeout / 3)) {
-      scroll = map(rem, timeout - (timeout / 3), (timeout / 3), 0, (lines - 3) * 11); //scroll if longer than 3 lines
-    }
-    showNotification();   // show notification
-  } else {
-    if (!scrOff && screenOff && cur > scrTimer + timeout) {
-      scrOff = true;
-    }
-
-    printLocalTime();   // display time
-    if (scrOff & screenOff) {
-      myOLED.clrScr();
-    }
-  }
-
-  myOLED.update();
-
-}
-
-void showNotification() {
-  myOLED.setFont(SmallFont);
-  copyMsg(msg);
-  if (msglen == 0) {
-    msg0 = "No messsage";
-  }
-  myOLED.print(msg0, LEFT, 1 - scroll);
-  myOLED.print(msg1, LEFT, 12 - scroll);
-  myOLED.print(msg2, LEFT, 23 - scroll);
-  myOLED.print(msg3, LEFT, 34 - scroll);
-  myOLED.print(msg4, LEFT, 45 - scroll);
-  myOLED.print(msg5, LEFT, 56 - scroll);
-
-
-}
-
-void printLocalTime() {
-  myOLED.print(watch.getAmPmC(true),  RIGHT, 10);
-
-  myOLED.setFont(MediumNumbers);
-  myOLED.print(watch.getHourZ() + watch.getTime(":%M:%S"), CENTER, 0);
-  myOLED.setFont(SmallFont);
-  myOLED.print(watch.getTime("%a %d %b"), CENTER, 21);
-
-  if (watch.isConnected()) {
-    myOLED.drawBitmap(0, 15, bluetooth, 16, 16);
-    myOLED.drawRect(110, 23, 127, 30);
-    myOLED.drawRectFill(108, 25, 110, 28);
-    myOLED.drawRectFill(map(watch.getPhoneBattery(), 0, 100, 127, 110), 23, 127, 30);
-  }
-
-
 }
 
 void copyMsg(String ms) {
@@ -278,3 +191,109 @@ void button(bool b) {
     b1 = false;
   }
 }
+
+
+void setup() {
+  Serial.begin(115200);
+  delay(4000);
+
+  Serial.println("Starting watch");
+  
+  pinMode(BUILTINLED, OUTPUT);
+  pinMode(BUTTON, INPUT_PULLUP);
+
+  Wire.begin(CUSTOM_SDA, CUSTOM_SCL);
+
+  // Initialize the OLED display (default address 0x3C)
+  if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
+    Serial.println(F("SSD1306 allocation failed"));
+    while(true);
+  }
+
+
+  display.clearDisplay();
+  display.setTextSize(1);
+  display.setTextColor(SSD1306_WHITE);
+  display.setCursor(0, 0);
+  display.println(F("Custom Pins Working!"));
+  display.display();
+
+  watch.setConfigurationCallback(configCallback);
+  watch.setNotificationCallback(notificationCallback);
+  watch.setRingerCallback(ringerCallback);
+  
+  watch.begin();
+
+  watch.set24Hour(true);
+  watch.setBattery(80);
+
+  timer = millis() - timeout;
+
+}
+
+void loop() {
+  watch.loop();
+
+  button(digitalRead(BUTTON) == LOW);   // input pin
+
+  display.clearDisplay();
+
+
+  digitalWrite(BUILTINLED, watch.isConnected());
+
+  long cur = millis();
+  if (cur < timer + timeout) {
+    scrTimer = cur;
+    long rem = (timer + timeout - cur);
+    if (lines > 3 && rem < timeout - (timeout / 3) && rem > (timeout / 3)) {
+      scroll = map(rem, timeout - (timeout / 3), (timeout / 3), 0, (lines - 3) * 11); //scroll if longer than 3 lines
+    }
+    showNotification();   // show notification
+  } else {
+    if (!scrOff && screenOff && cur > scrTimer + timeout) {
+      scrOff = true;
+    }
+
+    printLocalTime();   // display time
+    if (scrOff & screenOff) {
+  display.clearDisplay();
+    }
+  }
+
+  // myOLED.update();
+
+}
+
+void showNotification() {
+  // myOLED.setFont(SmallFont);
+  copyMsg(msg);
+  if (msglen == 0) {
+    msg0 = "No messsage";
+  }
+  // myOLED.print(msg0, LEFT, 1 - scroll);
+  // myOLED.print(msg1, LEFT, 12 - scroll);
+  // myOLED.print(msg2, LEFT, 23 - scroll);
+  // myOLED.print(msg3, LEFT, 34 - scroll);
+  // myOLED.print(msg4, LEFT, 45 - scroll);
+  // myOLED.print(msg5, LEFT, 56 - scroll);
+
+
+}
+
+void printLocalTime() {
+  // myOLED.print(watch.getAmPmC(true),  RIGHT, 10);
+
+  // myOLED.setFont(MediumNumbers);
+  // myOLED.print(watch.getHourZ() + watch.getTime(":%M:%S"), CENTER, 0);
+  // myOLED.setFont(SmallFont);
+  // myOLED.print(watch.getTime("%a %d %b"), CENTER, 21);
+
+  // if (watch.isConnected()) {
+  //   myOLED.drawBitmap(0, 15, bluetooth, 16, 16);
+  //   myOLED.drawRect(110, 23, 127, 30);
+  //   myOLED.drawRectFill(108, 25, 110, 28);
+  //   myOLED.drawRectFill(map(watch.getPhoneBattery(), 0, 100, 127, 110), 23, 127, 30);
+  }
+
+
+
