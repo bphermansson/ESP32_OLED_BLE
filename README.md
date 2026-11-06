@@ -39,3 +39,4 @@ The `OLED_I2C` library has been modified to include the `flipMode()` function
 
 
 
+https://github.com/fbiego/ESP32_OLED_BLE
