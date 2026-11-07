@@ -18,12 +18,10 @@ void notificationCallback(Notification notification)
    Serial.println(notification.title);
 
   timer = millis();
+  msgTitle = notification.title;
   msg = notification.message.substring(0, 126);
   msglen = msg.length();
   lines = ceil(float(msglen) / 21);
   scroll = 0;
   scrOff = false;
-
-  Serial.println(msglen);
-
 }

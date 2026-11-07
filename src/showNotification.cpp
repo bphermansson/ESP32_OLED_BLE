@@ -1,7 +1,8 @@
 #include "showNotification.h"
 #include <Arduino.h>
 
-String msg;
+extern int scroll;
+String msg, msgTitle;
 String msg0, msg1, msg2, msg3, msg4, msg5;
     
 void showNotification() {
@@ -10,14 +11,17 @@ void showNotification() {
   if (msglen == 0) {
     msg0 = "No message";
   }
-  // myOLED.print(msg0, LEFT, 1 - scroll);
-  // myOLED.print(msg1, LEFT, 12 - scroll);
-  // myOLED.print(msg2, LEFT, 23 - scroll);
-  // myOLED.print(msg3, LEFT, 34 - scroll);
-  // myOLED.print(msg4, LEFT, 45 - scroll);
-  // myOLED.print(msg5, LEFT, 56 - scroll);
-
-
+  display.setTextSize(1);
+  display.setTextColor(SSD1306_WHITE);
+  display.setCursor(0, -scroll);
+  display.println(msgTitle.substring(0, 21));
+  display.println(msg0);
+  display.println(msg1);
+  display.println(msg2);
+  display.println(msg3);
+  display.println(msg4);
+  display.println(msg5);
+  display.display();
 }
 
 void copyMsg(String ms) {

@@ -3,18 +3,13 @@ Receive Android notifications on ESP32 with an OLED screen via Bluetooth LE.
 
 Also functions as a clock, the time is set automatically via BLE when connected to the app.
 
-## Videos
-+ [`Chronos ESP32 OLED notifications`](https://youtu.be/fSZPsQY2NbI)
-+ [`ESP32 OLED notifications`](https://youtu.be/205QgAjmryA)
-+ [`How to connect`](https://youtu.be/4o1O2qxbPlw)
+Based on https://github.com/fbiego/ESP32_OLED_BLE
 
 ## Features
 + Receive notifications
 + Clock display (12 & 24hr mode)
-+ Rotate and/or flip OLED display
 + Screen & Notification timeout settings
 
-![1](image1.jpg?raw=true "1")
 
 ## Android app
 
@@ -25,9 +20,7 @@ Chronos
 ### Setup
 - Go to the watch tab and click on the Watches button
 - Pair new watch and select the ESP32
-- To Flip the display toggle Units (Metric, Imperial)
-- To Rotate the display toggle Temperature (Celsius, Farhenheit)
-
+- To test, click Notifications and use Notifications Test to send test messages.
 
 ## Libraries
 
@@ -39,4 +32,3 @@ The `OLED_I2C` library has been modified to include the `flipMode()` function
 
 
 
-https://github.com/fbiego/ESP32_OLED_BLE
