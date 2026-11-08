@@ -21,6 +21,7 @@ Chronos
 - Go to the watch tab and click on the Watches button
 - Pair new watch and select the ESP32
 - To test, click Notifications and use Notifications Test to send test messages.
+- In Notifications/Apps, set which apps to get notifications from.
 
 ## Libraries
 

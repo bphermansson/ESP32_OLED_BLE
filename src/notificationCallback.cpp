@@ -5,6 +5,8 @@
 extern long timer;
 extern int scroll;
 extern bool scrOff;
+extern bool indicatorBlinking;
+extern unsigned long indicatorTimer;
 
 void notificationCallback(Notification notification)
 {
@@ -17,7 +19,9 @@ void notificationCallback(Notification notification)
   Serial.println(notification.message);
    Serial.println(notification.title);
 
-  timer = millis();
+  indicatorTimer = millis();
+  timer = indicatorTimer;
+  indicatorBlinking = true;
   msgTitle = notification.title;
   msg = notification.message.substring(0, 126);
   msglen = msg.length();

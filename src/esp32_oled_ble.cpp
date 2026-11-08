@@ -23,6 +23,8 @@ ChronosESP32 watch("OLED Watch");
 extern uint8_t SmallFont[], MediumNumbers[];
 
 static bool deviceConnected = false;
+bool indicatorBlinking = false;
+unsigned long indicatorTimer = 0;
 static int id = 0;
 long timeout = 30000, timer = 0, scrTimer = 0;
 bool rotate = false, flip = false, hr24 = true, notify = true, screenOff = false, scrOff = false, b1;
@@ -64,16 +66,20 @@ void loop() {
   digitalWrite(BUILTINLED, watch.isConnected());
 
   long cur = millis();
+  if (indicatorBlinking && (unsigned long)cur - indicatorTimer >= 5000) {
+    indicatorBlinking = false;
+  }
+  digitalWrite(INDICATORLED,
+               indicatorBlinking && (cur / 300) % 2 ? LED_ON : LED_OFF);
+
   if (cur < timer + timeout) {
     scrTimer = cur;
     long rem = (timer + timeout - cur);
     if (lines > 3 && rem < timeout - (timeout / 3) && rem > (timeout / 3)) {
       scroll = map(rem, timeout - (timeout / 3), (timeout / 3), 0, (lines - 3) * 11); //scroll if longer than 3 lines
     }
-    digitalWrite(INDICATORLED, (cur / 300) % 2 ? LED_ON : LED_OFF);  // blink ~1.6 Hz
     showNotification();
   } else {
-    digitalWrite(INDICATORLED, LED_OFF);
     if (!scrOff && screenOff && cur > scrTimer + timeout) {
       scrOff = true;
     }
@@ -84,8 +90,6 @@ void loop() {
     }
   }
 }
-
-
 
 
 
