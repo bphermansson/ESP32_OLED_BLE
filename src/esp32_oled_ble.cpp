@@ -15,11 +15,16 @@ extern uint8_t SmallFont[], MediumNumbers[];
 static bool deviceConnected = false;
 static bool audioReady = false;
 bool indicatorBlinking = false;
+bool notificationActive = false;
 unsigned long indicatorTimer = 0;
 static int id = 0;
 long timeout = 30000, timer = 0, scrTimer = 0;
 bool rotate = false, flip = false, hr24 = true, notify = true, screenOff = false, scrOff = false, b1;
 int scroll = 0, bat = 0, lines = 0, msglen = 0;
+
+bool isDndActive() {
+  return watch.isQuietActive() || watch.isSleepActive();
+}
 
 void setup() {
   Serial.begin(115200);
@@ -51,7 +56,7 @@ void setup() {
 
   if (AUDIO_ENABLED) {
     audioReady = audioSetup();
-    if (audioReady) {
+    if (audioReady && !isDndActive()) {
       playPling(1046.5, 0.6); // 1046.5 Hz (C6 note) for 0.6 seconds
     }
   }
@@ -60,16 +65,23 @@ void setup() {
 void loop() {
   watch.loop();
   display.clearDisplay();
-  digitalWrite(BUILTINLED, watch.isConnected());
 
   long cur = millis();
+  const bool dndActive = isDndActive();
+  digitalWrite(BUILTINLED, !dndActive && watch.isConnected());
+
+  if (dndActive) {
+    notificationActive = false;
+    indicatorBlinking = false;
+  }
+
   if (indicatorBlinking && (unsigned long)cur - indicatorTimer >= 5000) {
     indicatorBlinking = false;
   }
   digitalWrite(INDICATORLED,
-               indicatorBlinking && (cur / 300) % 2 ? LED_ON : LED_OFF);
+               !dndActive && indicatorBlinking && (cur / 300) % 2 ? LED_ON : LED_OFF);
 
-  if (cur < timer + timeout) {
+  if (!dndActive && notificationActive && cur < timer + timeout) {
     scrTimer = cur;
     long rem = (timer + timeout - cur);
     if (lines > 3 && rem < timeout - (timeout / 3) && rem > (timeout / 3)) {
@@ -77,6 +89,7 @@ void loop() {
     }
     showNotification();
   } else {
+    notificationActive = false;
     if (!scrOff && screenOff && cur > scrTimer + timeout) {
       scrOff = true;
     }
@@ -86,9 +99,7 @@ void loop() {
       display.clearDisplay();
     }
   }
-  if (AUDIO_ENABLED && consumeNotificationTone() && audioReady) {
+  if (AUDIO_ENABLED && consumeNotificationTone() && audioReady && !dndActive) {
     playPling(1046.5, 0.6);
   }
 }
-
-

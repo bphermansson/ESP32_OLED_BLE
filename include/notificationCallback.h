@@ -3,5 +3,6 @@
 #include <ChronosESP32.h>
 void notificationCallback(Notification notification);
 bool consumeNotificationTone();
+bool isDndActive();
 
 #endif

@@ -8,6 +8,7 @@ static std::atomic<unsigned long> pendingNotificationTones{0};
 extern long timer;
 extern int scroll;
 extern bool scrOff;
+extern bool notificationActive;
 extern bool indicatorBlinking;
 extern unsigned long indicatorTimer;
 
@@ -22,8 +23,13 @@ void notificationCallback(Notification notification)
   Serial.println(notification.message);
    Serial.println(notification.title);
 
+  if (isDndActive()) {
+    return;
+  }
+
   indicatorTimer = millis();
   timer = indicatorTimer;
+  notificationActive = true;
   indicatorBlinking = true;
   msgTitle = notification.title;
   msg = notification.message.substring(0, 126);
