@@ -13,9 +13,11 @@ Based on https://github.com/fbiego/ESP32_OLED_BLE
 ## Audio
 
 A MAX98357 I2S amplifier plays a tone at startup and for each notification.
-Connect BCLK to GPIO2, LRC to GPIO1, and DIN to GPIO3. The tone uses the Audio Tools I2S stream; avoid
-mixing it with calls to the legacy `driver/i2s.h` API.
+Connect BCLK to GPIO2, LRC to GPIO1, and DIN to GPIO3.
 
+## Visual
+
+A LED can be connected, it flashes when a notifications arrive.
 
 ## Android app
 

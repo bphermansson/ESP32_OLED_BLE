@@ -5,11 +5,6 @@
 
 #include "playPling.h"
 
-// MAX98357 I2S pins
-#define MAX_DIN   3
-#define MAX_LRC   1
-#define MAX_BCLK  2
-
 #define SAMPLE_RATE 44100
 
 static I2SStream i2s;
