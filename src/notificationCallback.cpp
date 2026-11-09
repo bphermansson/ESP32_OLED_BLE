@@ -17,11 +17,8 @@ void notificationCallback(Notification notification)
   Serial.print("Notification received at ");
   Serial.println(notification.time);
   Serial.print("From: ");
-  Serial.print(notification.app);
-  Serial.print("\tIcon: ");
-  Serial.println(notification.icon);
+  Serial.println(notification.title);
   Serial.println(notification.message);
-   Serial.println(notification.title);
 
   if (isDndActive()) {
     return;

@@ -1,7 +1,6 @@
 #include <Arduino.h>
 
 #include "AudioTools.h"
-#include <math.h>
 
 #include "playPling.h"
 
@@ -31,7 +30,7 @@ void playPling(float frequency, float duration_sec) {
     float t = (float)i / SAMPLE_RATE;
     // Exponential decay creates a bell/pling envelope
     float envelope = exp(-6.0 * t);
-    int16_t sample = (int16_t)(sin(2.0 * PI * frequency * t) * 12000 * envelope);
+    int16_t sample = (int16_t)(sin(2.0 * PI * frequency * t) * 30000 * envelope);
 
     // Stereo frame (Left and Right channels)
     int16_t stereo_sample[2] = {sample, sample};
