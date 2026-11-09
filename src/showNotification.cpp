@@ -6,7 +6,6 @@ String msg, msgTitle;
 String msg0, msg1, msg2, msg3, msg4, msg5;
     
 void showNotification() {
-  // myOLED.setFont(SmallFont);
   copyMsg(msg);
   if (msglen == 0) {
     msg0 = "No message";

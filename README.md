@@ -10,6 +10,12 @@ Based on https://github.com/fbiego/ESP32_OLED_BLE
 + Clock display (12 & 24hr mode)
 + Screen & Notification timeout settings
 
+## Audio
+
+A MAX98357 I2S amplifier plays a tone at startup and for each notification.
+Connect BCLK to GPIO2, LRC to GPIO1, and DIN to GPIO3. The tone uses the Audio Tools I2S stream; avoid
+mixing it with calls to the legacy `driver/i2s.h` API.
+
 
 ## Android app
 
@@ -30,6 +36,4 @@ Download [`ChronosESP32`](https://www.arduinolibraries.info/libraries/chronos-es
 Extract the `OLED_I2C` & `ChronosESP32` library to your Arduino libraries folder
 
 The `OLED_I2C` library has been modified to include the `flipMode()` function
-
-
 

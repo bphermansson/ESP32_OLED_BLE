@@ -5,6 +5,7 @@
 #include "showNotification.h"
 #include "printLocalTime.h"
 #include "notificationCallback.h"
+#include "playPling.h"
 
 #define BUILTINLED 2
 #define INDICATORLED 21
@@ -23,6 +24,7 @@ ChronosESP32 watch("OLED Watch");
 extern uint8_t SmallFont[], MediumNumbers[];
 
 static bool deviceConnected = false;
+static bool audioReady = false;
 bool indicatorBlinking = false;
 unsigned long indicatorTimer = 0;
 static int id = 0;
@@ -58,6 +60,10 @@ void setup() {
 
   timer = millis() - timeout;
 
+  audioReady = audioSetup();
+  if (audioReady) {
+    playPling(1046.5, 0.6); // 1046.5 Hz (C6 note) for 0.6 seconds
+  }
 }
 
 void loop() {
@@ -89,9 +95,10 @@ void loop() {
       display.clearDisplay();
     }
   }
+  if (consumeNotificationTone() && audioReady) {
+    playPling(1046.5, 0.6);
+  }
 }
-
-
 
 
 

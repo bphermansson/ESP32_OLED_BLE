@@ -1,6 +1,9 @@
 #include <Arduino.h>
+#include <atomic>
 #include "notificationCallback.h"
 #include "showNotification.h"
+
+static std::atomic<unsigned long> pendingNotificationTones{0};
 
 extern long timer;
 extern int scroll;
@@ -28,4 +31,14 @@ void notificationCallback(Notification notification)
   lines = ceil(float(msglen) / 21);
   scroll = 0;
   scrOff = false;
+  pendingNotificationTones.fetch_add(1, std::memory_order_relaxed);
+}
+
+bool consumeNotificationTone()
+{
+  if (pendingNotificationTones.load(std::memory_order_relaxed) == 0) {
+    return false;
+  }
+  pendingNotificationTones.fetch_sub(1, std::memory_order_relaxed);
+  return true;
 }
