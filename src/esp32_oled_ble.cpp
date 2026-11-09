@@ -7,24 +7,6 @@
 #include "notificationCallback.h"
 #include "playPling.h"
 
-#define AUDIO_ENABLED true
-
-#define BUILTINLED 2
-#define INDICATORLED 21
-#define LED_ON HIGH 
-#define LED_OFF LOW
-#define SCREEN_WIDTH 128
-#define SCREEN_HEIGHT 64
-
-// Define your custom I2C pins here
-#define CUSTOM_SDA 8
-#define CUSTOM_SCL 9
-
-// MAX98357 I2S pins
-#define MAX_DIN   3
-#define MAX_LRC   1
-#define MAX_BCLK  2
-
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 ChronosESP32 watch("OLED Watch");
 
@@ -108,6 +90,5 @@ void loop() {
     playPling(1046.5, 0.6);
   }
 }
-
 
 

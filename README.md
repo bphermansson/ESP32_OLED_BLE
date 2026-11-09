@@ -13,11 +13,14 @@ Based on https://github.com/fbiego/ESP32_OLED_BLE
 ## Audio
 
 A MAX98357 I2S amplifier plays a tone at startup and for each notification.
-Connect BCLK to GPIO2, LRC to GPIO1, and DIN to GPIO3.
 
 ## Visual
 
 A LED can be connected, it flashes when a notifications arrive.
+
+## Settings
+
+All setting are done in platformio.ini.
 
 ## Android app
 
@@ -31,11 +34,7 @@ Chronos
 - To test, click Notifications and use Notifications Test to send test messages.
 - In Notifications/Apps, set which apps to get notifications from.
 
-## Libraries
 
-Download [`ChronosESP32`](https://www.arduinolibraries.info/libraries/chronos-esp32) library from Arduino Library Manager or [`ChronosESP32`](https://github.com/fbiego/chronos-esp32)
 
-Extract the `OLED_I2C` & `ChronosESP32` library to your Arduino libraries folder
 
-The `OLED_I2C` library has been modified to include the `flipMode()` function
 
