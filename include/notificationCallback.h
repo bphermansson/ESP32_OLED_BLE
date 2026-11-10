@@ -4,5 +4,6 @@
 void notificationCallback(Notification notification);
 bool consumeNotificationTone();
 bool isDndActive();
+unsigned long notificationRevision();
 
 #endif

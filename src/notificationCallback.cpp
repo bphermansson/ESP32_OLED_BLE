@@ -4,6 +4,7 @@
 #include "showNotification.h"
 
 static std::atomic<unsigned long> pendingNotificationTones{0};
+static std::atomic<unsigned long> notificationCount{0};
 
 extern long timer;
 extern int scroll;
@@ -31,10 +32,15 @@ void notificationCallback(Notification notification)
   msgTitle = notification.title;
   msg = notification.message.substring(0, 126);
   msglen = msg.length();
-  lines = ceil(float(msglen) / 21);
   scroll = 0;
   scrOff = false;
+  notificationCount.fetch_add(1, std::memory_order_release);
   pendingNotificationTones.fetch_add(1, std::memory_order_relaxed);
+}
+
+unsigned long notificationRevision()
+{
+  return notificationCount.load(std::memory_order_acquire);
 }
 
 bool consumeNotificationTone()

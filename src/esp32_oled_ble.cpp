@@ -1,13 +1,24 @@
 #include <Wire.h>
-#include <Adafruit_GFX.h>
-#include <Adafruit_SSD1306.h>
 #include <ChronosESP32.h>
+#include "display.h"
 #include "showNotification.h"
 #include "printLocalTime.h"
 #include "notificationCallback.h"
 #include "playPling.h"
 
-Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
+static_assert(SCREEN_ROTATION >= 0 && SCREEN_ROTATION <= 3,
+              "SCREEN_ROTATION must be between 0 and 3");
+static_assert(CLOCK_TEXT_SIZE > 0 && CLOCK_TEXT_SIZE <= 255 &&
+              CLOCK_DETAIL_TEXT_SIZE > 0 && CLOCK_DETAIL_TEXT_SIZE <= 255 &&
+              NOTIFICATION_TEXT_SIZE > 0 && NOTIFICATION_TEXT_SIZE <= 255,
+              "Text sizes must be between 1 and 255");
+
+#if defined(SSD1306_ENABLED) && SSD1306_ENABLED
+  Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
+#else
+  Adafruit_ST7789 display(&SPI, TFT_CS, TFT_DC, TFT_RST);
+#endif
+
 ChronosESP32 watch("OLED Watch");
 
 extern uint8_t SmallFont[], MediumNumbers[];
@@ -33,19 +44,30 @@ void setup() {
   pinMode(BUILTINLED, OUTPUT);
   pinMode(INDICATORLED, OUTPUT);
   digitalWrite(INDICATORLED, LED_OFF);
+
+#if defined(SSD1306_ENABLED)// && SSD1306_ENABLED
   Wire.begin(CUSTOM_SDA, CUSTOM_SCL);
 
   if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
     Serial.println(F("SSD1306 allocation failed"));
     while(true);
   }
+#else
+  if (!SPI.begin(TFT_SCLK, -1, TFT_MOSI, TFT_CS)) {
+    Serial.println(F("Failed to initialize TFT SPI"));
+    while (true) delay(1000);
+  }
+  display.init(SCREEN_WIDTH, SCREEN_HEIGHT);
+#endif
 
-  display.clearDisplay();
+  display.setRotation(SCREEN_ROTATION);
+  display.cp437(true);
+  clearScreen();
   display.setTextSize(2);
-  display.setTextColor(SSD1306_WHITE);
+  display.setTextColor(DISPLAY_WHITE);
   display.setCursor(0, 0);
   display.println(F("BLE Notify"));
-  display.display();
+  updateScreen();
 
   watch.setNotificationCallback(notificationCallback);
   watch.begin();
@@ -64,7 +86,14 @@ void setup() {
 
 void loop() {
   watch.loop();
-  display.clearDisplay();
+
+  enum class ScreenView { Startup, Clock, Notification, Off };
+  static ScreenView displayedView = ScreenView::Startup;
+  static String displayedClock;
+  static bool displayedConnection = false;
+  static unsigned long displayedNotification = 0;
+  static int displayedScroll = 0;
+  static int maxNotificationScroll = 0;
 
   long cur = millis();
   const bool dndActive = isDndActive();
@@ -84,19 +113,48 @@ void loop() {
   if (!dndActive && notificationActive && cur < timer + timeout) {
     scrTimer = cur;
     long rem = (timer + timeout - cur);
-    if (lines > 3 && rem < timeout - (timeout / 3) && rem > (timeout / 3)) {
-      scroll = map(rem, timeout - (timeout / 3), (timeout / 3), 0, (lines - 3) * 11); //scroll if longer than 3 lines
+    const unsigned long revision = notificationRevision();
+    if (displayedView != ScreenView::Notification || displayedNotification != revision) {
+      maxNotificationScroll = notificationScrollLimit();
     }
-    showNotification();
+    if (maxNotificationScroll > 0 && rem < timeout - (timeout / 3)) {
+      scroll = rem <= timeout / 3
+                   ? maxNotificationScroll
+                   : map(rem, timeout - (timeout / 3), timeout / 3, 0, maxNotificationScroll);
+    }
+    if (displayedView != ScreenView::Notification ||
+        displayedNotification != revision || displayedScroll != scroll) {
+      clearScreen();
+      showNotification();
+      displayedView = ScreenView::Notification;
+      displayedNotification = revision;
+      displayedScroll = scroll;
+    }
   } else {
     notificationActive = false;
     if (!scrOff && screenOff && cur > scrTimer + timeout) {
       scrOff = true;
     }
 
-    printLocalTime();   // display time
-    if (scrOff & screenOff) {
-      display.clearDisplay();
+    if (scrOff && screenOff) {
+      if (displayedView != ScreenView::Off) {
+        clearScreen();
+        updateScreen();
+        displayedView = ScreenView::Off;
+      }
+    } else {
+      const String clock = watch.getHourZ() + watch.getTime(":%M %a %d %b");
+      const bool connected = watch.isConnected();
+      if (displayedView != ScreenView::Clock ||
+          displayedClock != clock || displayedConnection != connected) {
+        if (displayedView != ScreenView::Clock) {
+          clearScreen();
+        }
+        printLocalTime();
+        displayedView = ScreenView::Clock;
+        displayedClock = clock;
+        displayedConnection = connected;
+      }
     }
   }
   if (AUDIO_ENABLED && consumeNotificationTone() && audioReady && !dndActive) {

@@ -27,6 +27,17 @@ visible on the OLED.
 
 All setting are done in platformio.ini.
 
+Select exactly one display by enabling `SSD1306_ENABLED` or `ST7789_ENABLED`
+in the build flags, and set the matching screen dimensions and pins.
+Set `SCREEN_ROTATION` to 0, 1, 2, or 3 for 0, 90, 180, or 270 degrees
+clockwise. Keep the screen dimensions set to the display's native dimensions.
+Adjust `CLOCK_TEXT_SIZE`, `CLOCK_DETAIL_TEXT_SIZE`, and
+`NOTIFICATION_TEXT_SIZE` to change the font sizes. Reduce them for smaller
+displays so the clock and status fit on screen.
+The ST7789 uses hardware SPI on `TFT_SCLK` and `TFT_MOSI` for faster updates.
+The built-in font supports Swedish letters in notification text; other
+unsupported Unicode characters are displayed as `?`.
+
 ## Android app
 
 Chronos
@@ -38,7 +49,3 @@ Chronos
 - Pair new watch and select the ESP32
 - To test, click Notifications and use Notifications Test to send test messages.
 - In Notifications/Apps, set which apps to get notifications from.
-
-
-
-
