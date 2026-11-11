@@ -33,12 +33,36 @@ Select exactly one display by enabling `SSD1306_ENABLED` or `ST7789_ENABLED`
 in the build flags, and set the matching screen dimensions and pins.
 Set `SCREEN_ROTATION` to 0, 1, 2, or 3 for 0, 90, 180, or 270 degrees
 clockwise. Keep the screen dimensions set to the display's native dimensions.
-Adjust `CLOCK_TEXT_SIZE`, `CLOCK_DETAIL_TEXT_SIZE`, and
-`NOTIFICATION_TEXT_SIZE` to change the font sizes. Reduce them for smaller
-displays so the clock and status fit on screen.
+LVGL renders the clock, notifications, and connection indicator. The layout
+automatically uses a smaller clock font on smaller displays. The disconnected
+animation is shown on displays at least 240 by 160 pixels; smaller displays
+show the connected indicator only. The runtime layout is defined in
+`src/ui.c`; `ui_definition.yaml` is a designer reference and is not loaded
+by the firmware.
 The ST7789 uses hardware SPI on `TFT_SCLK` and `TFT_MOSI` for faster updates.
-The built-in font supports Swedish letters in notification text; other
+The notification font supports Swedish letters; other
 unsupported Unicode characters are displayed as `?`.
+The generated Montserrat font is licensed under the SIL Open Font License;
+see [MONTSERRAT-OFL.txt](include/MONTSERRAT-OFL.txt).
+
+## UI tests
+
+After PlatformIO has installed the dependencies, run the native LVGL UI test:
+
+```sh
+cmake -S test/test_ui -B /tmp/esp32-oled-ui-test \
+  -DLVGL_DIR="$PWD/.pio/libdeps/nologo_esp32c3_super_mini/lvgl"
+cmake --build /tmp/esp32-oled-ui-test
+/tmp/esp32-oled-ui-test/ui_test
+```
+
+The UTF-8 conversion test can be run with:
+
+```sh
+g++ -std=c++11 -Itest/test_display_text_utf8 -Iinclude \
+  test/test_display_text_utf8/test_main.cpp src/displayText.cpp -o /tmp/display-text-test
+/tmp/display-text-test
+```
 
 ## Android app
 

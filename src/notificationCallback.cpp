@@ -1,12 +1,13 @@
 #include <Arduino.h>
 #include <atomic>
 #include "notificationCallback.h"
-#include "showNotification.h"
+
+String msg, msgTitle;
 
 static std::atomic<unsigned long> pendingNotificationTones{0};
 static std::atomic<unsigned long> notificationCount{0};
 
-extern long timer;
+extern unsigned long timer;
 extern bool scrOff;
 extern bool notificationActive;
 extern bool indicatorBlinking;
@@ -30,7 +31,6 @@ void notificationCallback(Notification notification)
   indicatorBlinking = true;
   msgTitle = notification.title;
   msg = notification.message.substring(0, 126);
-  msglen = msg.length();
   scrOff = false;
   notificationCount.fetch_add(1, std::memory_order_release);
   pendingNotificationTones.fetch_add(1, std::memory_order_relaxed);

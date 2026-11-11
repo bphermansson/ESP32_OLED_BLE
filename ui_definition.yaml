@@ -1,0 +1,159 @@
+# >>> LVGL Designer - generated from the canvas. >>>
+# This block is regenerated from the canvas - edits here are not preserved.
+font:
+  - file:
+      type: gfonts
+      family: Montserrat
+      weight: 500
+    id: montserrat_133
+    size: 133
+    bpp: 4
+    glyphsets: [GF_Latin_Core]
+  - file:
+      type: gfonts
+      family: Montserrat
+      weight: 500
+    id: montserrat_33
+    size: 33
+    bpp: 4
+    glyphsets: [GF_Latin_Core]
+
+lvgl:
+  pages:
+    - id: canvas_1
+      bg_color: 0x111827
+      pad_all: 0
+      scrollbar_mode: "OFF"
+      widgets:
+        - obj:
+            id: clk_card
+            x: 0
+            y: 0
+            width: 320
+            height: 240
+            bg_color: 0x070E1B
+            bg_opa: 95%
+            border_width: 1
+            border_color: 0x162038
+            border_opa: 20%
+            radius: 16
+            shadow_width: 0
+            shadow_color: 0x8E9FB8
+            shadow_opa: 0%
+            scrollbar_mode: "OFF"
+            pad_all: 0
+            widgets:
+              - label:
+                  id: clockD
+                  x: 0
+                  y: 15
+                  width: 318
+                  height: 145
+                  text: "14:32"
+                  text_color: 0xC1CFDC
+                  text_align: CENTER
+                  long_mode: CLIP
+                  text_font: montserrat_133
+              - label:
+                  id: dateD
+                  x: 12
+                  y: 152
+                  width: 294
+                  height: 65
+                  text: "Mon 28 Mar"
+                  text_color: 0x8E9FB8
+                  text_align: CENTER
+                  long_mode: CLIP
+                  text_font: montserrat_44
+
+        - line:
+            id: lv_line_1
+            x: -5
+            y: -38
+            width: 318
+            height: 65
+            points:
+              - 20, 50
+              - 300, 50
+            line_color: 0xFFFFFF
+
+    - id: canvas_3
+      bg_color: 0x111827
+      pad_all: 0
+      scrollbar_mode: "OFF"
+      widgets:
+        - obj:
+            id: widget_1794403374090_4spag62kl
+            x: 0
+            y: 0
+            width: 320
+            height: 240
+            bg_color: 0x070E1B
+            bg_opa: 95%
+            border_width: 1
+            border_color: 0x162038
+            border_opa: 20%
+            radius: 16
+            shadow_width: 0
+            shadow_color: 0x8E9FB8
+            shadow_opa: 0%
+            scrollbar_mode: "OFF"
+            pad_all: 0
+            widgets:
+              - label:
+                  id: clockN
+                  x: 0
+                  y: 5
+                  width: 318
+                  height: 165
+                  text: "14:32"
+                  text_color: 0x2A4E6F
+                  text_align: CENTER
+                  long_mode: CLIP
+                  text_font: montserrat_133
+              - label:
+                  id: dateN
+                  x: 12
+                  y: 152
+                  width: 294
+                  height: 65
+                  text: "Mon 28 Mar"
+                  text_color: 0x294865
+                  text_align: CENTER
+                  long_mode: CLIP
+                  text_font: montserrat_44
+
+    - id: canvas_2
+      bg_color: 0x111827
+      pad_all: 0
+      scrollbar_mode: "OFF"
+      widgets:
+        - obj:
+            id: widget_1794403325897_21haraz3w
+            x: 0
+            y: 0
+            width: 320
+            height: 240
+            bg_color: 0x070E1B
+            bg_opa: 95%
+            border_width: 1
+            border_color: 0x162038
+            border_opa: 20%
+            radius: 16
+            shadow_width: 0
+            shadow_color: 0x8E9FB8
+            shadow_opa: 0%
+            scrollbar_mode: "OFF"
+            pad_all: 0
+            widgets:
+              - label:
+                  id: messageWidget
+                  x: 0
+                  y: 5
+                  width: 318
+                  height: 233
+                  text: "Message"
+                  text_color: 0xC1CFDC
+                  text_align: LEFT
+                  text_font: montserrat_33
+# <<< end LVGL Designer block <<<
