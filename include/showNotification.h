@@ -6,5 +6,4 @@ extern String msg, msgTitle;
 extern int msglen, lines;
 
 void showNotification();
-int notificationScrollLimit();
 #endif

@@ -15,7 +15,7 @@ static_assert(CLOCK_TEXT_SIZE > 0 && CLOCK_TEXT_SIZE <= 255 &&
 
 #if defined(SSD1306_ENABLED) && SSD1306_ENABLED
   Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
-#else
+#elif defined(ST7789_ENABLED) && ST7789_ENABLED
   Adafruit_ST7789 display(&SPI, TFT_CS, TFT_DC, TFT_RST);
 #endif
 
@@ -31,7 +31,7 @@ unsigned long indicatorTimer = 0;
 static int id = 0;
 long timeout = 30000, timer = 0, scrTimer = 0;
 bool rotate = false, flip = false, hr24 = true, notify = true, screenOff = false, scrOff = false, b1;
-int scroll = 0, bat = 0, lines = 0, msglen = 0;
+int bat = 0, lines = 0, msglen = 0;
 
 bool isDndActive() {
   return watch.isQuietActive() || watch.isSleepActive();
@@ -63,10 +63,10 @@ void setup() {
   display.setRotation(SCREEN_ROTATION);
   display.cp437(true);
   clearScreen();
-  display.setTextSize(2);
-  display.setTextColor(DISPLAY_WHITE);
-  display.setCursor(0, 0);
-  display.println(F("BLE Notify"));
+  display.setTextSize(4);
+  display.setTextColor(ST77XX_WHITE);
+  display.setCursor(0, 10);
+  display.println(F("Welcome!"));
   updateScreen();
 
   watch.setNotificationCallback(notificationCallback);
@@ -92,8 +92,6 @@ void loop() {
   static String displayedClock;
   static bool displayedConnection = false;
   static unsigned long displayedNotification = 0;
-  static int displayedScroll = 0;
-  static int maxNotificationScroll = 0;
 
   long cur = millis();
   const bool dndActive = isDndActive();
@@ -112,23 +110,12 @@ void loop() {
 
   if (!dndActive && notificationActive && cur < timer + timeout) {
     scrTimer = cur;
-    long rem = (timer + timeout - cur);
     const unsigned long revision = notificationRevision();
     if (displayedView != ScreenView::Notification || displayedNotification != revision) {
-      maxNotificationScroll = notificationScrollLimit();
-    }
-    if (maxNotificationScroll > 0 && rem < timeout - (timeout / 3)) {
-      scroll = rem <= timeout / 3
-                   ? maxNotificationScroll
-                   : map(rem, timeout - (timeout / 3), timeout / 3, 0, maxNotificationScroll);
-    }
-    if (displayedView != ScreenView::Notification ||
-        displayedNotification != revision || displayedScroll != scroll) {
       clearScreen();
       showNotification();
       displayedView = ScreenView::Notification;
       displayedNotification = revision;
-      displayedScroll = scroll;
     }
   } else {
     notificationActive = false;
@@ -149,12 +136,14 @@ void loop() {
           displayedClock != clock || displayedConnection != connected) {
         if (displayedView != ScreenView::Clock) {
           clearScreen();
+          invalidateAnimation();
         }
         printLocalTime();
         displayedView = ScreenView::Clock;
         displayedClock = clock;
         displayedConnection = connected;
       }
+      drawDisconnectedAnimation(!connected && displayedView == ScreenView::Clock);
     }
   }
   if (AUDIO_ENABLED && consumeNotificationTone() && audioReady && !dndActive) {

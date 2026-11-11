@@ -1,7 +1,9 @@
 # ESP32_OLED_BLE
-Receive Android notifications on ESP32 with an OLED screen via Bluetooth LE. 
+Receive Android notifications on ESP32 with an OLED screen via Bluetooth LE. Optional, add a Led and/or DAC/Amp + speaker to get light and sound when a new notification is detected.
 
 Also functions as a clock, the time is set automatically via BLE when connected to the app.
+
+Support for two types of Oled/LCD, but more can be added.
 
 Based on https://github.com/fbiego/ESP32_OLED_BLE
 Coded by me and Copilot.
