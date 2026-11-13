@@ -34,16 +34,25 @@ in the build flags, and set the matching screen dimensions and pins.
 Set `SCREEN_ROTATION` to 0, 1, 2, or 3 for 0, 90, 180, or 270 degrees
 clockwise. Keep the screen dimensions set to the display's native dimensions.
 LVGL renders the clock, notifications, and connection indicator. The layout
-automatically uses a smaller clock font on smaller displays. The disconnected
-animation is shown on displays at least 240 by 160 pixels; smaller displays
-show the connected indicator only. The runtime layout is defined in
+automatically uses a smaller clock font on smaller displays. The line at the
+top of the clock is green when connected and red when disconnected. On a
+monochrome SSD1306 it appears white when connected and is not visible when
+disconnected. The runtime layout is defined in
 `src/ui.c`; `ui_definition.yaml` is a designer reference and is not loaded
 by the firmware.
 The ST7789 uses hardware SPI on `TFT_SCLK` and `TFT_MOSI` for faster updates.
-The notification font supports Swedish letters; other
+Notifications use LVGL's Montserrat 38 font, with matching-size Swedish glyphs;
+other
 unsupported Unicode characters are displayed as `?`.
 The generated Montserrat font is licensed under the SIL Open Font License;
 see [MONTSERRAT-OFL.txt](include/MONTSERRAT-OFL.txt).
+The large clock font is a digits-and-colon subset of `src/my_font_133.c`.
+After changing that source font, regenerate the firmware subset with
+`node tools/subset-clock-font.js`; the full font is excluded from the build.
+The date uses an ASCII-only subset of LVGL's Montserrat 48; regenerate it after
+installing the PlatformIO dependencies with `node tools/subset-date-font.js`.
+Its LVGL license is in [LVGL-MIT.txt](include/LVGL-MIT.txt). The build checks
+the final binary size against the app partition before uploading.
 
 ## UI tests
 

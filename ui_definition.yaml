@@ -17,6 +17,11 @@ font:
     size: 33
     bpp: 4
     glyphsets: [GF_Latin_Core]
+  - file: "gfonts://Pacifico"
+    id: pacifico_133
+    size: 133
+    bpp: 4
+    glyphsets: [GF_Latin_Core]
 
 lvgl:
   pages:
@@ -46,14 +51,14 @@ lvgl:
               - label:
                   id: clockD
                   x: 0
-                  y: 15
+                  y: 0
                   width: 318
                   height: 145
                   text: "14:32"
                   text_color: 0xC1CFDC
                   text_align: CENTER
                   long_mode: CLIP
-                  text_font: montserrat_133
+                  text_font: pacifico_133
               - label:
                   id: dateD
                   x: 12

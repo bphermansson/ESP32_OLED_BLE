@@ -11,7 +11,10 @@ set(CONFIG_LV_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 set(CONFIG_LV_USE_THORVG_INTERNAL OFF CACHE BOOL "" FORCE)
 add_subdirectory("${LVGL_DIR}" lvgl)
 
-add_executable(ui_test test_main.c ../../src/ui.c ../../src/ui_font_text.c)
+add_executable(ui_test test_main.c ../../src/ui.c ../../src/ui_font_text.c
+    ../../src/clock_font_133.c ../../src/my_font_133.c ../../src/ui_font_swedish_38.c
+    ../../src/ui_font_date_48.c)
+set_source_files_properties(../../src/my_font_133.c PROPERTIES COMPILE_DEFINITIONS "my_font_133=full_font_133")
 target_include_directories(ui_test PRIVATE ../../include)
 target_compile_options(ui_test PRIVATE -UNDEBUG)
 target_link_libraries(ui_test PRIVATE lvgl m)

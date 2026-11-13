@@ -29,7 +29,8 @@ void notificationCallback(Notification notification)
   timer = indicatorTimer;
   notificationActive = true;
   indicatorBlinking = true;
-  msgTitle = notification.title;
+  //msgTitle = notification.title;
+  msgTitle = notification.title.substring(0, 12);
   msg = notification.message.substring(0, 126);
   scrOff = false;
   notificationCount.fetch_add(1, std::memory_order_release);

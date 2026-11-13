@@ -6,23 +6,17 @@
 #include "playPling.h"
 #include <lvgl.h>
 #include "ui.h"
-#include "icon.h"
 
 static_assert(SCREEN_ROTATION >= 0 && SCREEN_ROTATION <= 3,
               "SCREEN_ROTATION must be between 0 and 3");
 static constexpr size_t draw_width =
     (SCREEN_ROTATION % 2 == 0) ? SCREEN_WIDTH : SCREEN_HEIGHT;
 static uint16_t draw_buffer[draw_width * 20];
-static const uint8_t *const frames[] = {
-  frame0, frame1, frame2, frame3, frame4, frame5, frame6, frame7,
-  frame8, frame9, frame10, frame11, frame12, frame13, frame14, frame15,
-  frame16, frame17, frame18, frame19, frame20, frame21, frame22, frame23,
-  frame24, frame25, frame26, frame27
-};
 
 static uint32_t lvgl_tick() {
   return static_cast<uint32_t>(millis());
 }
+
 
 static void flush_display(lv_display_t *lv_display, const lv_area_t *area,
                           uint8_t *pixels) {
@@ -130,9 +124,6 @@ void loop() {
   static String displayedClock;
   static bool displayedConnection = false;
   static unsigned long displayedNotification = 0;
-  static unsigned long animationTimer = 0;
-  static size_t animationFrame = 0;
-  static bool animationShown = false;
 
   const unsigned long cur = millis();
   const bool dndActive = isDndActive();
@@ -177,18 +168,10 @@ void loop() {
       const bool connected = watch.isConnected();
       if (displayedView != ScreenView::Clock ||
           displayedClock != clock || displayedConnection != connected) {
-        if (displayedView != ScreenView::Clock || displayedConnection != connected)
-          animationShown = false;
         ui_show_clock(time.c_str(), date.c_str(), connected);
         displayedView = ScreenView::Clock;
         displayedClock = clock;
         displayedConnection = connected;
-      }
-      if (!connected && (!animationShown || cur - animationTimer >= 100)) {
-        ui_set_animation_frame(frames[animationFrame]);
-        animationFrame = (animationFrame + 1) % (sizeof(frames) / sizeof(frames[0]));
-        animationTimer = cur;
-        animationShown = true;
       }
     }
   }
