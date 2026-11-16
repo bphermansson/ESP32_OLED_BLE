@@ -2,6 +2,10 @@
 Receive Android notifications on ESP32 with an OLED screen via Bluetooth LE. Optional, add a Led and/or DAC/Amp + speaker to get light and sound when a new notification is detected.
 
 Also functions as a clock, the time is set automatically via BLE when connected to the app.
+The watch restarts daily at 04:00 using the time synchronized by Chronos.
+The time must be synchronized after startup; if it is not synchronized during
+the 04:00 minute, that day's restart is skipped. A retained date prevents a
+restart loop if Chronos reconnects during the same minute.
 
 Support for two types of Oled/LCD, but more can be added.
 
@@ -71,6 +75,13 @@ The UTF-8 conversion test can be run with:
 g++ -std=c++11 -Itest/test_display_text_utf8 -Iinclude \
   test/test_display_text_utf8/test_main.cpp src/displayText.cpp -o /tmp/display-text-test
 /tmp/display-text-test
+```
+
+The nightly restart schedule can be tested with:
+
+```sh
+g++ -std=c++11 -Iinclude test/test_nightly_restart/test_main.cpp -o /tmp/nightly-restart-test
+/tmp/nightly-restart-test
 ```
 
 ## Android app

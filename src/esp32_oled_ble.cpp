@@ -4,6 +4,8 @@
 #include "displayText.h"
 #include "notificationCallback.h"
 #include "playPling.h"
+#include "nightlyRestart.h"
+#include <atomic>
 #include <lvgl.h>
 #include "ui.h"
 
@@ -51,6 +53,15 @@ static void flush_display(lv_display_t *lv_display, const lv_area_t *area,
 #endif
 
 ChronosESP32 watch("OLED Watch");
+
+static std::atomic<bool> timeSynced{false};
+RTC_DATA_ATTR static int lastNightlyRestartDate = -1;
+
+static void configurationCallback(Config config, uint32_t value, uint32_t) {
+  if (config == CF_TIME) {
+    timeSynced.store(value == 1, std::memory_order_release);
+  }
+}
 
 static bool audioReady = false;
 bool indicatorBlinking = false;
@@ -103,6 +114,7 @@ void setup() {
   ui_init();
 
   watch.setNotificationCallback(notificationCallback);
+  watch.setConfigurationCallback(configurationCallback);
   watch.begin();
   watch.set24Hour(true);
   watch.setBattery(80);
@@ -119,6 +131,15 @@ void setup() {
 
 void loop() {
   watch.loop();
+  if (timeSynced.load(std::memory_order_acquire)) {
+    const tm localTime = watch.getTimeStruct();
+    if (shouldRestartTonight(true, localTime, lastNightlyRestartDate)) {
+      lastNightlyRestartDate = nightlyRestartDate(localTime);
+      Serial.println("Scheduled 04:00 restart");
+      Serial.flush();
+      ESP.restart();
+    }
+  }
   enum class ScreenView { Startup, Clock, Notification, Off };
   static ScreenView displayedView = ScreenView::Startup;
   static String displayedClock;
