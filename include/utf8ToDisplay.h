@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-inline uint8_t nextDisplayCharacter(const char *&text) {
+inline uint32_t nextDisplayCodepoint(const char *&text) {
   const uint8_t first = static_cast<uint8_t>(*text++);
   if (first < 0x80) {
     return first;
@@ -43,6 +43,14 @@ inline uint8_t nextDisplayCharacter(const char *&text) {
     return '?';
   }
 
+  return codepoint;
+}
+
+inline uint8_t nextDisplayCharacter(const char *&text) {
+  const uint32_t codepoint = nextDisplayCodepoint(text);
+  if (codepoint < 0x80) {
+    return static_cast<uint8_t>(codepoint);
+  }
   switch (codepoint) {
     case 0x00c4: return 0x8e;
     case 0x00c5: return 0x8f;

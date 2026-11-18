@@ -46,8 +46,8 @@ disconnected. The runtime layout is defined in
 by the firmware.
 The ST7789 uses hardware SPI on `TFT_SCLK` and `TFT_MOSI` for faster updates.
 Notifications use LVGL's Montserrat 38 font, with matching-size Swedish glyphs;
-other
-unsupported Unicode characters are displayed as `?`.
+common emojis are translated to compact text forms such as `<3`, `(Y)`, and
+`:)`; other unsupported Unicode characters are displayed as `?`.
 The generated Montserrat font is licensed under the SIL Open Font License;
 see [MONTSERRAT-OFL.txt](include/MONTSERRAT-OFL.txt).
 The large clock font is a digits-and-colon subset of `src/my_font_133.c`.
