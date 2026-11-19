@@ -155,7 +155,7 @@ lvgl:
                   id: messageWidget
                   x: 0
                   y: 5
-                  width: 318
+                  width: 325
                   height: 233
                   text: "Message"
                   text_color: 0xC1CFDC
