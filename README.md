@@ -1,33 +1,25 @@
 # desktopNotifier
-Receive Android notifications on ESP32 with an OLED screen via Bluetooth LE. Optional, add a Led and/or DAC/Amp + speaker to get light and sound when a new notification is detected.
+Receive and display Android notifications!
+This device emulates a Chronos smart watch and let you see selected notifications directly without the need to pick up the phone or smartwatch.
+The hardware used is a ESP32-C3 with an OLED display. Support for SSD1306- and ST7789-based displays. Optional, add a Led and/or DAC/Amp + speaker to get light and sound when a new notification is detected. These can be muted during nighttime.
+
+
+on ESP32 with an OLED screen via Bluetooth LE. 
 
 Also functions as a clock, the time is set automatically via BLE when connected to the app.
 The watch restarts daily at 04:00 using the time synchronized by Chronos.
-The time must be synchronized after startup; if it is not synchronized during
-the 04:00 minute, that day's restart is skipped. A retained date prevents a
-restart loop if Chronos reconnects during the same minute.
 
 Support for two types of Oled/LCD, but more can be added.
-
 Based on https://github.com/fbiego/ESP32_OLED_BLE
 Coded by me and Copilot.
 
-## Features
-+ Receive and display notifications
-+ Clock display (12 & 24hr mode)
-+ Screen & Notification timeout settings
-
-## Audio
-
-A MAX98357 I2S amplifier plays a tone at startup and for each notification.
-
-## Visual
-
-A LED can be connected, it flashes when a notifications arrive.
-
 Chronos Quiet Hours and Sleep Time act as Do Not Disturb: notification messages
-and tones are suppressed, and both LEDs are turned off. The clock remains
+and tones are suppressed, and LED is turned off. The clock remains
 visible on the OLED.
+
+The line at the top of the clock is green when connected and red when disconnected. On a
+monochrome SSD1306 it appears white when connected and is not visible when
+disconnected.
 
 ## Settings
 
@@ -37,26 +29,19 @@ Select exactly one display by enabling `SSD1306_ENABLED` or `ST7789_ENABLED`
 in the build flags, and set the matching screen dimensions and pins.
 Set `SCREEN_ROTATION` to 0, 1, 2, or 3 for 0, 90, 180, or 270 degrees
 clockwise. Keep the screen dimensions set to the display's native dimensions.
-LVGL renders the clock, notifications, and connection indicator. The layout
-automatically uses a smaller clock font on smaller displays. The line at the
-top of the clock is green when connected and red when disconnected. On a
-monochrome SSD1306 it appears white when connected and is not visible when
-disconnected. The runtime layout is defined in
-`src/ui.c`; `ui_definition.yaml` is a designer reference and is not loaded
-by the firmware.
-The ST7789 uses hardware SPI on `TFT_SCLK` and `TFT_MOSI` for faster updates.
-Notifications use LVGL's Montserrat 38 font, with matching-size Swedish glyphs;
-common emojis are translated to compact text forms such as `<3`, `(Y)`, and
-`:)`; other unsupported Unicode characters are displayed as `?`.
-The generated Montserrat font is licensed under the SIL Open Font License;
-see [MONTSERRAT-OFL.txt](include/MONTSERRAT-OFL.txt).
-The large clock font is a digits-and-colon subset of `src/my_font_133.c`.
-After changing that source font, regenerate the firmware subset with
-`node tools/subset-clock-font.js`; the full font is excluded from the build.
-The date uses an ASCII-only subset of LVGL's Montserrat 48; regenerate it after
-installing the PlatformIO dependencies with `node tools/subset-date-font.js`.
-Its LVGL license is in [LVGL-MIT.txt](include/LVGL-MIT.txt). The build checks
-the final binary size against the app partition before uploading.
+
+## Android app
+
+Chronos
+
+<a href='https://chronos.ke/app?id=esp32'><img alt='Download Chronos' height="100px" src='https://chronos.ke/img/chronos.png'/></a>
+
+### Setup
+- Go to the watch tab and click on the Watches button
+- Pair new watch and select the ESP32
+- To test, click Notifications and use Notifications Test to send test messages.
+- In Notifications/Apps, set which apps to get notifications from.
+
 
 ## UI tests
 
@@ -84,14 +69,3 @@ g++ -std=c++11 -Iinclude test/test_nightly_restart/test_main.cpp -o /tmp/nightly
 /tmp/nightly-restart-test
 ```
 
-## Android app
-
-Chronos
-
-<a href='https://chronos.ke/app?id=esp32'><img alt='Download Chronos' height="100px" src='https://chronos.ke/img/chronos.png'/></a>
-
-### Setup
-- Go to the watch tab and click on the Watches button
-- Pair new watch and select the ESP32
-- To test, click Notifications and use Notifications Test to send test messages.
-- In Notifications/Apps, set which apps to get notifications from.
