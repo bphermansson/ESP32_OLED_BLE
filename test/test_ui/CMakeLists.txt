@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(esp32_oled_ble_ui_test C)
+project(desktopNotifier_ui_test C)
 
 if(NOT LVGL_DIR)
     message(FATAL_ERROR "Set LVGL_DIR to the LVGL library directory")
