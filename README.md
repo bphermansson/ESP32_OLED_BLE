@@ -3,6 +3,9 @@ Receive and display Android notifications!
 This device emulates a Chronos smart watch and let you see selected notifications directly without the need to pick up the phone or smartwatch.
 When no new notification arrives, the screen show current time and date. The GUI also has a green/red line. Red when not connected to the phone, otherwise green.
 
+Based on https://github.com/fbiego/ESP32_OLED_BLE
+Coded by me and Copilot.
+
 ## Hardware
 The hardware used is a ESP32-C3 with an OLED display. Support for SSD1306- and ST7789-based displays. Optional, add a Led and/or DAC/Amp (MAX98357A) + speaker to get light and sound when a new notification is detected. These can be muted during nighttime.
 
