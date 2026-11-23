@@ -11,7 +11,7 @@ The hardware used is a ESP32-C3 with an OLED display. Support for SSD1306- and S
 
 ## Settings
 All setting are done in platformio.ini.
-- Set pins for leds and amplifier, if used.
+- Set pins for display, leds and amplifier, if used.
 - Select exactly one display by enabling `SSD1306_ENABLED` or `ST7789_ENABLED`
 in the build flags, and set the matching screen dimensions and pins.
 - Set `SCREEN_ROTATION` to 0, 1, 2, or 3 for 0, 90, 180, or 270 degrees
